@@ -16,19 +16,21 @@ class Bot(private val gameState: GameState) {
 		return when {
 			shouldDefendAnyRow() -> tryDefendRow()
 			canBuildEnergyBuilding() -> tryBuildEnergyBuilding()
+			canBuildAttackBuilding() -> tryBuildAttackBuilding()
 			else -> doNothingCommand()
 		}
 	}
 
-	/* ===== Checks for if the row is an energy or attack row. ===== */
+	//<editor-fold desc="Checks for if the row is an energy or attack row">
 	private val energyRowEvenness = 1
 	private val attackRowEvenness = 0
 
 	private fun isEnergyRow(row: Int) = row % 2 == energyRowEvenness
 	private fun isAttackRow(row: Int) = row % 2 == attackRowEvenness
+	//</editor-fold>
 
 
-	/* ===== Energy checks and handlers ===== */
+	//<editor-fold desc="Energy checks and handlers">
 	private fun getFirstEmptyEnergyCell(row: Int): Cell? = rowCells(row, myself.playerType).firstOrNull { it.buildings.isEmpty() && it.x < minDefenseIndex }
 	private fun canBuildEnergyBuilding(row: Int): Boolean = BuildingType.ENERGY.canAfford(myself) && getFirstEmptyEnergyCell(row) != null
 	private fun buildEnergyBuilding(row: Int): String {
@@ -45,6 +47,27 @@ class Bot(private val gameState: GameState) {
 			buildEnergyBuilding(it)
 		} ?: doNothingCommand()
 	}
+	//</editor-fold>
+
+
+	//<editor-fold desc="Attack checks and handlers">
+	private fun getFirstEmptyAttackCell(row: Int): Cell? = rowCells(row, myself.playerType).firstOrNull { it.buildings.isEmpty() && it.x < minDefenseIndex }
+	private fun canBuildAttackBuilding(row: Int): Boolean = BuildingType.ATTACK.canAfford(myself) && getFirstEmptyAttackCell(row) != null
+	private fun buildAttackBuilding(row: Int): String {
+		if (!isAttackRow(row)) {
+			return doNothingCommand()
+		}
+
+		val firstAttackCell = getFirstEmptyAttackCell(row) ?: throw IllegalStateException("No space for an attack building in row")
+		return buildCommand(firstAttackCell.x, firstAttackCell.y, BuildingType.ATTACK)
+	}
+	private fun canBuildAttackBuilding(): Boolean = (0 until gameHeight).filter { isAttackRow(it) }.any { canBuildAttackBuilding(it) }
+	private fun tryBuildAttackBuilding(): String {
+		return (0 until gameHeight).filter { isAttackRow(it) }.firstOrNull { canBuildAttackBuilding(it) }?.let {
+			buildAttackBuilding(it)
+		} ?: doNothingCommand()
+	}
+	//</editor-fold>
 
 
 	//<editor-fold desc="Defense checks and handlers">
