@@ -1,9 +1,12 @@
 package juandb.entelect.challenge
 
-data class RowState(val cells: Array<Cell>) {
+data class RowState(val cells: Array<Cell>, val index: Int) {
 	private fun Array<Cell>.count(player: Player.PlayerType, building: Building.BuildingType): Int {
-		return this.count { it.cellOwner == player && it.buildings.any { it.buildingType == building } }
+		return this.count { it.owner == player && it.buildings.any { it.buildingType == building } }
 	}
+
+	val friendlyEmptyCells by lazy { cells.filter { it.owner == Player.PLAYER && it.buildings.isEmpty() } }
+	val enemyEmptyCells by lazy { cells.filter { it.owner == Player.ENEMY && it.buildings.isEmpty() } }
 
 	val friendlyAttackBuildings by lazy { cells.count(Player.PLAYER, Building.BuildingType.ATTACK) }
 	val friendlyDefenseBuildings by lazy { cells.count(Player.PLAYER, Building.BuildingType.DEFENSE) }

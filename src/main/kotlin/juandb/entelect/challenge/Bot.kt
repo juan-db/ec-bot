@@ -1,7 +1,6 @@
 package juandb.entelect.challenge
 
 import juandb.entelect.challenge.Building.BuildingType
-import juandb.entelect.challenge.Player.PlayerType
 
 class Bot(private val gameState: GameState) {
 	companion object {
@@ -17,11 +16,20 @@ class Bot(private val gameState: GameState) {
 	private val gameHeight: Int = gameDetails.mapHeight
 	private val myself: Player = gameState.players.first { it.playerType == Player.PLAYER }
 	private val opponent: Player = gameState.players.first { it.playerType == Player.ENEMY }
+	private val buildableRows = gameState.rows.filter { it.friendlyEmptyCells.isNotEmpty() }
 
 	fun run(): String {
-		return when {
-			else -> doNothingCommand()
+		buildableRows.forEach {
+			if (it.friendlyDefenseBuildings < 1 && (it.enemyMissiles > 0 || it.enemyAttackBuildings > 0)) {
+				return if (BuildingType.DEFENSE.canAfford(myself)) {
+					buildCommand(it.friendlyEmptyCells.last().x, it.index, BuildingType.DEFENSE)
+				} else {
+					doNothingCommand()
+				}
+			}
 		}
+
+		return doNothingCommand()
 	}
 
 }
