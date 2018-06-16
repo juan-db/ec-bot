@@ -51,10 +51,7 @@ fabric.properties
 \.idea/
 *.iml
 
-target/archive-tmp/*
-target/classes/*
-target/maven-archiver/*
-kotlin-sample-bot-*-SNAPSHOT.jar
+target/*
 
 state.json
 textMap.txt

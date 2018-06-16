@@ -6,6 +6,10 @@ data class Player(
         val health: Int,
         val hitsTaken: Int,
         val score: Int) {
+	companion object {
+		val PLAYER = PlayerType.A
+		val ENEMY = PlayerType.B
+	}
 
     enum class PlayerType {
         A,

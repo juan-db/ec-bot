@@ -26,11 +26,5 @@ data class Building(
 		fun canAfford(player: Player) = this.cost <= player.energy
     }
 
-    fun isAttackBuilding() : Boolean {
-        return buildingType == BuildingType.ATTACK
-    }
-
-    fun isDefenceBuilding() : Boolean {
-        return buildingType == BuildingType.DEFENSE
-    }
+	fun isBuildingType(buildingType: BuildingType) = this.buildingType == buildingType
 }
