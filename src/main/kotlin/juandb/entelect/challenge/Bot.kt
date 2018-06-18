@@ -20,12 +20,17 @@ class Bot(private val gameState: GameState) {
 	private val gameDetails: GameDetails = gameState.gameDetails
 	private val gameWidth: Int = gameDetails.mapWidth
 	private val gameHeight: Int = gameDetails.mapHeight
+	/** The width of my side of the board. */
+	private val myWidth: Int = gameWidth / 2
 	private val myself: Player = gameState.players.first { it.playerType == Player.PLAYER }
 	private val opponent: Player = gameState.players.first { it.playerType == Player.ENEMY }
 	private val rows = gameState.gameMap.mapIndexed { index, cells -> RowState(index, cells) }
 	private val buildableRows = rows.filter { it.friendlyEmptyCells.isNotEmpty() }
 
-	private val minDefenseRow = gameWidth / 2 - gameWidth / 2 / 4
+	private val minDefenseRow = myWidth - myWidth / 4
+
+	private val actualEnergyBuildingCount = rows.sumBy { it.friendlyEnergyBuildings }
+	private val idealEnergyBuildingCount = myWidth * gameHeight - (myWidth - minDefenseRow) * gameHeight / 2
 
 	fun run(): String {
 		// If I can't afford any buildings, do nothing
@@ -47,7 +52,14 @@ class Bot(private val gameState: GameState) {
 			}
 		}
 
-
+		// Check if I lack energy buildings
+		if (actualEnergyBuildingCount < idealEnergyBuildingCount) {
+			buildableRows.firstOrNull()?.let {
+				val buildCell = it.friendlyEmptyCells.firstOrNull()?.let {
+					return buildCommand(it.x, it.y, BuildingType.ENERGY)
+				}
+			}
+		}
 
 		return doNothingCommand()
 	}
