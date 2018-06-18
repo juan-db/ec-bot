@@ -42,4 +42,8 @@ data class RowState(val index: Int, val cells: Array<Cell>) {
 
 	val friendlyMissiles by lazy { cells.count { it.missiles.any { it.owner == Player.PLAYER } } }
 	val enemyMissiles by lazy { cells.count { it.missiles.any {it.owner == Player.ENEMY } } }
+
+	fun isUnderAttack(): Boolean = enemyAttackBuildings > 0 || enemyMissiles > 0
+	fun isDefended(): Boolean = friendlyDefenseBuildings > 0
+	fun hasMaxBuildings(max: Int): Boolean = friendlyAttackBuildings + friendlyEnergyBuildings >= max
 }
