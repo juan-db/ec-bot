@@ -25,11 +25,16 @@ class Bot(private val gameState: GameState) {
 	private val rows = gameState.gameMap.mapIndexed { index, cells -> RowState(index, cells) }
 	private val buildableRows = rows.filter { it.friendlyEmptyCells.isNotEmpty() }
 
-	private val minDefenseRow = gameWidth / 2 / 4 - 1
+	private val minDefenseRow = gameWidth / 2 - gameWidth / 2 / 4
 
 	fun run(): String {
+		// If I can't afford any buildings, do nothing
+		if (BuildingType.values().none { it.canAfford(myself) }) {
+			return doNothingCommand()
+		}
+
 		// check if an initial row of defense buildings is required for any row
-		buildableRows.forEach {row ->
+		buildableRows.forEach { row ->
 			if (!row.isDefended()) {
 				// if the row is under attack of it contains the max amount of valuable buildings, defend it
 				if (row.isUnderAttack() || row.hasMaxBuildings(minDefenseRow)) {
@@ -41,6 +46,8 @@ class Bot(private val gameState: GameState) {
 				}
 			}
 		}
+
+
 
 		return doNothingCommand()
 	}
