@@ -17,6 +17,7 @@ fun <R : Any> R.logger(): Lazy<Logger> {
     return lazy {
         Logger.getLogger(this.javaClass.name).apply {
 			addHandler(LOG_HANDLER)
+			useParentHandlers = false
 		}
     }
 }

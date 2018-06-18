@@ -1,9 +1,13 @@
 package juandb.entelect.challenge.entity
 
+import com.google.gson.annotations.SerializedName
 import juandb.entelect.challenge.entity.Player.PlayerType
 
 data class Building(
-		val x: Int, val y: Int, val owner: PlayerType,
+		val x: Int,
+		val y: Int,
+		@SerializedName("playerType")
+		val owner: PlayerType,
 		val health: Int,
 		val constructionTimeLeft: Int,
 		val price: Int,

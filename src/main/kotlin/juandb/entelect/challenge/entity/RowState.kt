@@ -1,6 +1,6 @@
 package juandb.entelect.challenge.entity
 
-data class RowState(val cells: Array<Cell>, val index: Int) {
+data class RowState(val index: Int, val cells: Array<Cell>) {
 	private fun Array<Cell>.count(player: Player.PlayerType, building: Building.BuildingType): Int {
 		return this.count { it.owner == player && it.buildings.any { it.buildingType == building } }
 	}
