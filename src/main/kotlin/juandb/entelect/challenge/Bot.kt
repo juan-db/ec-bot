@@ -1,6 +1,9 @@
 package juandb.entelect.challenge
 
-import juandb.entelect.challenge.Building.BuildingType
+import juandb.entelect.challenge.entity.Building.BuildingType
+import juandb.entelect.challenge.entity.GameDetails
+import juandb.entelect.challenge.entity.GameState
+import juandb.entelect.challenge.entity.Player
 
 class Bot(private val gameState: GameState) {
 	companion object {

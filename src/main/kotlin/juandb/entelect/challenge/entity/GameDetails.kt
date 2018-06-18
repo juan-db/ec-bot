@@ -1,6 +1,6 @@
-package juandb.entelect.challenge
+package juandb.entelect.challenge.entity
 
-import juandb.entelect.challenge.Building.BuildingType
+import juandb.entelect.challenge.entity.Building.BuildingType
 import java.util.*
 
 data class GameDetails(

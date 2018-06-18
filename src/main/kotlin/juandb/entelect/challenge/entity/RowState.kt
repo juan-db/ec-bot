@@ -1,4 +1,4 @@
-package juandb.entelect.challenge
+package juandb.entelect.challenge.entity
 
 data class RowState(val cells: Array<Cell>, val index: Int) {
 	private fun Array<Cell>.count(player: Player.PlayerType, building: Building.BuildingType): Int {

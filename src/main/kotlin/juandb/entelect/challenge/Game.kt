@@ -1,7 +1,7 @@
 package juandb.entelect.challenge
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import juandb.entelect.challenge.entity.GameState
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter

@@ -1,6 +1,6 @@
-package juandb.entelect.challenge
+package juandb.entelect.challenge.entity
 
-import juandb.entelect.challenge.Player.PlayerType
+import juandb.entelect.challenge.entity.Player.PlayerType
 
 data class Building(
 		val x: Int, val y: Int, val owner: PlayerType,
