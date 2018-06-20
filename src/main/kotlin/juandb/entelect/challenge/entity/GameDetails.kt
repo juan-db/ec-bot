@@ -7,4 +7,4 @@ data class GameDetails(
 		val round: Int,
 		val mapWidth: Int,
 		val mapHeight: Int,
-		val buildingPrices: HashMap<BuildingType, Int>)
+		val buildingsStats: HashMap<BuildingType, BuildingStats>)

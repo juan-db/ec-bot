@@ -19,16 +19,7 @@ data class Building(
 		val constructionScore: Int,
 		val energyGeneratedPerTurn: Int,
 		val buildingType: BuildingType) {
-
-	/* TODO values in here are hard-coded because afaik they don't get provided in the state.json file. */
-    enum class BuildingType(val id: Int, val cost: Int, val health: Int, val constructionTime: Int,
-                            val constructedCharacter: Char, val underConstructionCharacter: Char) {
-        DEFENSE(0, 30, 20, 3, 'D', 'd'),
-        ATTACK(1, 30, 5, 1, 'A', 'a'),
-        ENERGY(2, 20, 5, 1, 'E', 'e');
-
-		fun canAfford(player: Player) = this.cost <= player.energy
+    enum class BuildingType(val id: Int) {
+		DEFENSE(0), ATTACK(1), ENERGY(2);
     }
-
-	fun isBuildingType(buildingType: BuildingType) = this.buildingType == buildingType
 }
