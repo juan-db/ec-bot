@@ -19,7 +19,7 @@ data class Building(
 		val constructionScore: Int,
 		val energyGeneratedPerTurn: Int,
 		val buildingType: BuildingType) {
-    enum class BuildingType(val id: Int) {
+	enum class BuildingType(val id: Int) {
 		DEFENSE(0), ATTACK(1), ENERGY(2);
-    }
+	}
 }

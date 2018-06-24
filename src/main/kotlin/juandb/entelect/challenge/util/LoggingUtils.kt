@@ -14,12 +14,12 @@ val LOG_HANDLER: FileHandler = FileHandler(LOG_PATH, true).apply {
 }
 
 fun <R : Any> R.logger(): Lazy<Logger> {
-    return lazy {
-        Logger.getLogger(this.javaClass.name).apply {
+	return lazy {
+		Logger.getLogger(this.javaClass.name).apply {
 			addHandler(LOG_HANDLER)
 			useParentHandlers = false
 		}
-    }
+	}
 }
 
 fun Throwable.stringStackTrace(): String {

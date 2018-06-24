@@ -8,6 +8,9 @@ data class RowState(val index: Int, val cells: Array<Cell>) {
 	val friendlyEmptyCells by lazy { cells.filter { it.owner == Player.PLAYER && it.buildings.isEmpty() } }
 	val enemyEmptyCells by lazy { cells.filter { it.owner == Player.ENEMY && it.buildings.isEmpty() } }
 
+	val friendlyOccupiedCells by lazy { cells.filter { it.owner == Player.PLAYER && it.buildings.isNotEmpty() } }
+	val enemyOccupiedCells by lazy { cells.filter { it.owner == Player.ENEMY && it.buildings.isNotEmpty() } }
+
 	val friendlyAttackBuildings by lazy { cells.count(Player.PLAYER, Building.BuildingType.ATTACK) }
 	val friendlyDefenseBuildings by lazy { cells.count(Player.PLAYER, Building.BuildingType.DEFENSE) }
 	val friendlyEnergyBuildings by lazy { cells.count(Player.PLAYER, Building.BuildingType.ENERGY) }
@@ -41,7 +44,7 @@ data class RowState(val index: Int, val cells: Array<Cell>) {
 	}
 
 	val friendlyMissiles by lazy { cells.count { it.missiles.any { it.owner == Player.PLAYER } } }
-	val enemyMissiles by lazy { cells.count { it.missiles.any {it.owner == Player.ENEMY } } }
+	val enemyMissiles by lazy { cells.count { it.missiles.any { it.owner == Player.ENEMY } } }
 
 	fun isUnderAttack(): Boolean = enemyAttackBuildings > 0 || enemyMissiles > 0
 	fun isDefended(): Boolean = friendlyDefenseBuildings > 0

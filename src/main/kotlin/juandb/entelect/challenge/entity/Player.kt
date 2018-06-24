@@ -11,8 +11,7 @@ data class Player(
 		val ENEMY = PlayerType.B
 	}
 
-    enum class PlayerType {
-        A,
-        B
-    }
+	enum class PlayerType {
+		A, B
+	}
 }
