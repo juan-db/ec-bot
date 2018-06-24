@@ -46,4 +46,15 @@ data class RowState(val index: Int, val cells: Array<Cell>) {
 	fun isUnderAttack(): Boolean = enemyAttackBuildings > 0 || enemyMissiles > 0
 	fun isDefended(): Boolean = friendlyDefenseBuildings > 0
 	fun hasMaxBuildings(max: Int): Boolean = friendlyAttackBuildings + friendlyEnergyBuildings >= max
+
+	/**
+	 * Checks if the row needs to be defended.
+	 *
+	 * Criteria for defense is either:
+	 * - If there is an enemy attack building and no friendly defense building, or
+	 * - A friendly defense building for every 3 enemy attack buildings.
+	 *
+	 * @return true if one of the above criteria are matched.
+	 */
+	fun needsDefense(): Boolean = (enemyAttackBuildings > 0 && friendlyDefenseBuildings < 1) || (enemyAttackBuildings / 3 > friendlyDefenseBuildings)
 }
