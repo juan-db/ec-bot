@@ -2,6 +2,8 @@ package juandb.entelect.challenge
 
 import com.google.gson.Gson
 import juandb.entelect.challenge.entity.GameState
+import juandb.entelect.challenge.util.logger
+import juandb.entelect.challenge.util.stringStackTrace
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -11,13 +13,18 @@ object Game {
 	private const val COMMAND_FILE_NAME = "command.txt"
 	private const val STATE_FILE_NAME = "state.json"
 
+	private val logger by logger()
+
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val gameState = parseGameState(STATE_FILE_NAME)
-		val bot = Bot(gameState)
-		val command = bot.run()
-
-		writeBotResponseToFile(COMMAND_FILE_NAME, command)
+		try {
+			val gameState = parseGameState(STATE_FILE_NAME)
+			val bot = Bot(gameState)
+			val command = bot.run()
+			writeBotResponseToFile(COMMAND_FILE_NAME, command)
+		} catch (exception: Exception) {
+			logger.info(exception.stringStackTrace())
+		}
 	}
 
 	private fun parseGameState(stateFileLocation: String): GameState {

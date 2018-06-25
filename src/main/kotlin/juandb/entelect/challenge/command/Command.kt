@@ -1,6 +1,8 @@
 package juandb.entelect.challenge.command
 
-interface Command {
-	fun getWeight(): Int
-	fun getCommand(): String
+import juandb.entelect.challenge.entity.GameState
+
+abstract class Command(protected val gameState: GameState) {
+	abstract fun getWeight(): Int
+	abstract fun getCommand(): String
 }

@@ -3,6 +3,7 @@ package juandb.entelect.challenge
 import juandb.entelect.challenge.command.BuildCommand
 import juandb.entelect.challenge.command.Command
 import juandb.entelect.challenge.command.DeconstructCommand
+import juandb.entelect.challenge.command.DoNothingCommand
 import juandb.entelect.challenge.entity.*
 import juandb.entelect.challenge.entity.Building.BuildingType
 import juandb.entelect.challenge.util.logger
@@ -43,24 +44,21 @@ class Bot(private val gameState: GameState) {
 	}
 
 	fun run(): String {
-		return commands.shuffled().firstOrNull()!!.getCommand()
+		return commands.maxBy { it.getWeight() }!!.getCommand()
 	}
 
 	private fun generateAvailableCommands(): List<Command> {
 		val output = ArrayList<Command>()
 
 		/* Do nothing command. */
-		output.add(object : Command {
-			override fun getWeight(): Int = 0
-			override fun getCommand(): String = ""
-		})
+		output.add(DoNothingCommand(gameState))
 
 		/* Add all possible build commands where I can afford the building. */
 		val affordableBuildings = gameDetails.buildingsStats.filter { (_, stats) -> stats.canAfford(myself) }
 		output.addAll(affordableBuildings.flatMap { building ->
 			buildableRows.flatMap { row ->
 				row.friendlyEmptyCells.map { cell ->
-					BuildCommand(cell.x, cell.y, building.key)
+					BuildCommand(gameState, cell.x, cell.y, building.key)
 				}
 			}
 		})
@@ -68,7 +66,7 @@ class Bot(private val gameState: GameState) {
 		/* Add deconstruction command for all cells with buildings. */
 		output.addAll(occupiedRows.flatMap { row ->
 			row.friendlyOccupiedCells.map {
-				DeconstructCommand(it.x, it.y)
+				DeconstructCommand(gameState, it.x, it.y)
 			}
 		})
 
