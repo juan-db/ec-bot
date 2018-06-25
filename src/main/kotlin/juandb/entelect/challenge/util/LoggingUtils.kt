@@ -22,6 +22,11 @@ fun <R : Any> R.logger(): Lazy<Logger> {
 	}
 }
 
+/**
+ * Prints the stack trace of a throwable to a string and returns it.
+ *
+ * @return a string of the stack trace
+ */
 fun Throwable.stringStackTrace(): String {
 	val sw = StringWriter()
 	val pw = PrintWriter(sw)

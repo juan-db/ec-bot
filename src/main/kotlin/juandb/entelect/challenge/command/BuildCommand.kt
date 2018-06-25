@@ -14,4 +14,6 @@ class BuildCommand(private val x: Int, private val y: Int, private val buildingT
 
 	override fun getWeight(): Int = 0 // TODO
 	override fun getCommand(): String = buildCommand(x, y, buildingType)
+
+	override fun toString(): String = "${this.javaClass.name}[x:$x;y:$y;type:${buildingType.name}]"
 }

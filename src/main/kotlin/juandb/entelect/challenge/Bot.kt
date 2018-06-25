@@ -38,7 +38,7 @@ class Bot(private val gameState: GameState) {
 
 	init {
 		val sb = StringBuilder("Possible command count: ${commands.size}\n")
-		commands.forEach { sb.append(it) }
+		commands.forEach { sb.append(it).appendln() }
 		logger.info(sb.toString())
 	}
 
