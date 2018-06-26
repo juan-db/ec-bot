@@ -19,6 +19,7 @@ object Game {
 	fun main(args: Array<String>) {
 		val command: String = try {
 			val gameState = parseGameState(STATE_FILE_NAME)
+			logger.info("""============================ ROUND: ${gameState.gameDetails.round} ============================""")
 			val bot = Bot(gameState)
 			bot.run()
 		} catch (exception: Exception) {

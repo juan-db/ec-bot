@@ -47,7 +47,7 @@ class BuildCommand(gameState: GameState,
 		/* Defense weight. */
 		if (buildingType == BuildingType.DEFENSE) {
 			return rows.firstOrNull { it.index == y }?.let {
-				it.enemyAttackBuildings / 3 - it.friendlyDefenseBuildings
+				it.enemyAttackBuildings * 2 - it.friendlyDefenseBuildings
 			} ?: 0
 		}
 
