@@ -17,14 +17,15 @@ object Game {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		try {
+		val command: String = try {
 			val gameState = parseGameState(STATE_FILE_NAME)
 			val bot = Bot(gameState)
-			val command = bot.run()
-			writeBotResponseToFile(COMMAND_FILE_NAME, command)
+			bot.run()
 		} catch (exception: Exception) {
 			logger.info(exception.stringStackTrace())
+			""
 		}
+		writeBotResponseToFile(COMMAND_FILE_NAME, command)
 	}
 
 	private fun parseGameState(stateFileLocation: String): GameState {

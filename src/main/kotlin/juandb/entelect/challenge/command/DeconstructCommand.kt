@@ -13,7 +13,7 @@ class DeconstructCommand(gameState: GameState, private val x: Int, private val y
 		private val random: Random = Random()
 	}
 
-	override fun getWeight(): Int = random.nextInt(2) // TODO
+	override fun getWeight(): Int = random.nextInt(2) - 15// TODO
 	override fun getCommand(): String = deconstructCommand(x, y)
 
 	override fun toString(): String = "${this.javaClass.name}[x:$x;y:$y]"

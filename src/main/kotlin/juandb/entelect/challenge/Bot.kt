@@ -37,14 +37,15 @@ class Bot(private val gameState: GameState) {
 
 	private val commands: List<Command> = generateAvailableCommands()
 
-	init {
-		val sb = StringBuilder("Possible command count: ${commands.size}\n")
-		commands.forEach { sb.append(it).appendln() }
-		logger.info(sb.toString())
-	}
-
 	fun run(): String {
-		return commands.maxBy { it.getWeight() }!!.getCommand()
+		val weightMap: Map<Int, Command> = commands.associate { command -> Pair(command.getWeight(), command) }.toSortedMap()
+		StringBuilder("Available commands: ${weightMap.size}\n").apply {
+			weightMap.forEach { key, value -> append("(").append(key).append(") ").append(value).append("\n") }
+			logger.info(this.toString())
+		}
+
+		// TODO
+		return ""
 	}
 
 	private fun generateAvailableCommands(): List<Command> {
