@@ -1,6 +1,8 @@
 package juandb.entelect.challenge
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import juandb.entelect.challenge.entity.GameState
 import juandb.entelect.challenge.util.logger
 import juandb.entelect.challenge.util.stringStackTrace
@@ -19,7 +21,7 @@ object Game {
 	fun main(args: Array<String>) {
 		val command: String = try {
 			val gameState = parseGameState(STATE_FILE_NAME)
-			logger.info("""============================ ROUND: ${gameState.gameDetails.round} ============================""")
+			logger.info("""======================== ROUND: ${gameState.gameDetails.round} ========================""")
 			val bot = Bot(gameState)
 			bot.run()
 		} catch (exception: Exception) {
@@ -37,7 +39,9 @@ object Game {
 			""
 		}
 
-		return Gson().fromJson(state, GameState::class.java)
+		val objectMapper = jacksonObjectMapper()
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+		return objectMapper.readValue(state)
 	}
 
 	private fun writeBotResponseToFile(commandFileLocation: String, command: String) {

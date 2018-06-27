@@ -5,6 +5,8 @@ import java.util.*
 
 data class GameDetails(
 		val round: Int,
+		val maxRounds: Int,
 		val mapWidth: Int,
 		val mapHeight: Int,
+		val roundIncomeEnergy: Int,
 		val buildingsStats: HashMap<BuildingType, BuildingStats>)
