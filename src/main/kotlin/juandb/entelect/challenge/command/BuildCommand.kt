@@ -29,8 +29,6 @@ class BuildCommand(gameState: GameState,
 
 	private val buildingsStats: Map<BuildingType, BuildingStats> = gameState.gameDetails.buildingsStats
 
-	private val rows = gameState.getRows()
-
 	override fun getWeight(): Int {
 		/* Energy weight. */
 		if (buildingType == BuildingType.ENERGY) {
@@ -39,21 +37,22 @@ class BuildCommand(gameState: GameState,
 				                                   it / (buildingsStats[BuildingType.ENERGY]?.energyGeneratedPerTurn
 						                                   ?: it)
 			                                   })
-			val currentEnergyBuildingCount = rows
-					.sumBy { it.cells.count { it.buildings.any { it.buildingType == BuildingType.ENERGY } } }
+			val currentEnergyBuildingCount = gameState.rows.sumBy {
+				it.cells.count { it.buildings.any { it.buildingType == BuildingType.ENERGY } }
+			}
 			return idealEnergyBuildingCount - currentEnergyBuildingCount
 		}
 
 		/* Defense weight. */
 		if (buildingType == BuildingType.DEFENSE) {
-			return rows.firstOrNull { it.index == y }?.let {
+			return gameState.rows.firstOrNull { it.index == y }?.let {
 				it.enemyAttackBuildings * 2 - it.friendlyDefenseBuildings
 			} ?: 0
 		}
 
 		/* Attack weight. */
 		if (buildingType == BuildingType.ATTACK) {
-			return rows.firstOrNull { it.index == y }?.let {
+			return gameState.rows.firstOrNull { it.index == y }?.let {
 				myWidth - it.enemyDefenseBuildings * 3
 			} ?: 0
 		}
