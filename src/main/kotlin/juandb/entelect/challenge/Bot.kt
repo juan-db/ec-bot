@@ -68,7 +68,7 @@ class Bot(private val gameState: GameState) {
 		output.addAll(affordableBuildings.flatMap { building ->
 			buildableRows.flatMap { row ->
 				row.friendlyEmptyCells.map { cell ->
-					BuildCommand(gameState, cell.x, cell.y, building.key)
+					BuildCommand.newBuildCommand(gameState, cell.x, cell.y, building.key)
 				}
 			}
 		})
