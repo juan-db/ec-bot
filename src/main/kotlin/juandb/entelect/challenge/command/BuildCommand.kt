@@ -4,8 +4,8 @@ import juandb.entelect.challenge.entity.Building
 import juandb.entelect.challenge.entity.Building.BuildingType
 import juandb.entelect.challenge.entity.BuildingStats
 import juandb.entelect.challenge.entity.GameState
-import juandb.entelect.challenge.util.logger
-import java.util.*
+import java.util.Random
+import kotlin.math.max
 import kotlin.math.min
 
 abstract class BuildCommand(gameState: GameState,
@@ -14,7 +14,6 @@ abstract class BuildCommand(gameState: GameState,
                             protected val buildingType: Building.BuildingType)
 	: Command(gameState) {
 	companion object {
-		val logger by logger()
 		/**
 		 * @return the build command for the given building type at the given coordinates.
 		 */
@@ -24,45 +23,54 @@ abstract class BuildCommand(gameState: GameState,
 
 		private val random: Random = Random()
 
+		private class DefenseCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
+			: BuildCommand(gameState, x, y, buildingType) {
+			override fun getWeight(): Int {
+				return gameState.rows.firstOrNull { it.index == y }?.let {
+					it.enemyAttackBuildings * 3 - it.friendlyDefenseBuildings
+				} ?: 0
+			}
+		}
+
+		private class AttackCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
+			: BuildCommand(gameState, x, y, buildingType) {
+			override fun getWeight(): Int {
+				return gameState.rows.firstOrNull { it.index == y }?.let {
+					// Not a good idea to attack a row with a lot of enemy defense buildings
+					val defenseBias = myWidth - it.enemyDefenseBuildings * 3
+					// Good idea to attack row with a lot of valuable buildings
+					val valuableBias = it.enemyAttackBuildings + it.enemyEnergyBuildings * 1.5
+					return defenseBias + valuableBias.toInt()
+				} ?: 0
+			}
+		}
+
+		private class EnergyCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
+			: BuildCommand(gameState, x, y, buildingType) {
+			override fun getWeight(): Int {
+				val mostExpensiveEssentialBuilding = max(buildingsStats[BuildingType.DEFENSE]!!.price,
+				                                         buildingsStats[BuildingType.ATTACK]!!.price)
+				val necessaryGenerationPerTurn = mostExpensiveEssentialBuilding - gameState.gameDetails.roundIncomeEnergy
+				val energyBuildingEnergyPerTurn = buildingsStats[BuildingType.ENERGY]!!.energyGeneratedPerTurn
+				// Build enough energy buildings so you generate enough energy to build the least expensive
+				// building each turn plus some extra energy buildings for good measure.
+				val idealEnergyBuildingCount = min(myWidth * mapHeight / 3,
+				                                   necessaryGenerationPerTurn / energyBuildingEnergyPerTurn + 3)
+				val currentEnergyBuildingCount = gameState.rows.sumBy { it.friendlyEnergyBuildings }
+
+				val currentEnergy = gameState.myself?.energy ?: 0
+
+				return idealEnergyBuildingCount - currentEnergyBuildingCount - currentEnergy / 50
+			}
+		}
+
 		fun newBuildCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType): BuildCommand {
 			return when (buildingType) {
-				BuildingType.DEFENSE -> object : BuildCommand(gameState, x, y, buildingType) {
-					override fun getWeight(): Int {
-						return gameState.rows.firstOrNull { it.index == y }?.let {
-							it.enemyAttackBuildings * 2 - it.friendlyDefenseBuildings
-						} ?: 0
-					}
-				}
-
-				BuildingType.ATTACK -> object : BuildCommand(gameState, x, y, buildingType) {
-					override fun getWeight(): Int {
-						return gameState.rows.firstOrNull { it.index == y }?.let {
-							myWidth - it.enemyDefenseBuildings * 3
-						} ?: 0
-					}
-				}
-
-				BuildingType.ENERGY -> object : BuildCommand(gameState, x, y, buildingType) {
-					override fun getWeight(): Int {
-						val leastExpensiveBuildingPrice = buildingsStats.values.minBy { it.price }!!.price
-						val necessaryGenerationPerTurn = leastExpensiveBuildingPrice - gameState.gameDetails.roundIncomeEnergy
-						val energyBuildingEnergyPerTurn = buildingsStats[BuildingType.ENERGY]!!.energyGeneratedPerTurn
-						// Build enough energy buildings so you generate enough energy to build the least expensive
-						// building each turn plus some extra energy buildings for good measure.
-						val idealEnergyBuildingCount = min(myWidth * mapHeight / 3,
-						                                   necessaryGenerationPerTurn / energyBuildingEnergyPerTurn + 3)
-						val currentEnergyBuildingCount = gameState.rows.sumBy { it.friendlyEnergyBuildings }
-
-						val currentEnergy = gameState.myself?.energy ?: 0
-
-						return idealEnergyBuildingCount - currentEnergyBuildingCount - currentEnergy / 50
-					}
-				}
-
+				BuildingType.DEFENSE -> DefenseCommand(gameState, x, y, buildingType)
+				BuildingType.ATTACK -> AttackCommand(gameState, x, y, buildingType)
+				BuildingType.ENERGY -> EnergyCommand(gameState, x, y, buildingType)
 				else -> object : BuildCommand(gameState, x, y, buildingType) {
-					override fun getWeight(): Int {
-						return random.nextInt(5)
-					}
+					override fun getWeight(): Int = random.nextInt(5)
 				}
 			}
 		}

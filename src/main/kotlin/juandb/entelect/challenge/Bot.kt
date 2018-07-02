@@ -4,8 +4,12 @@ import juandb.entelect.challenge.command.BuildCommand
 import juandb.entelect.challenge.command.Command
 import juandb.entelect.challenge.command.DeconstructCommand
 import juandb.entelect.challenge.command.DoNothingCommand
-import juandb.entelect.challenge.entity.*
 import juandb.entelect.challenge.entity.Building.BuildingType
+import juandb.entelect.challenge.entity.BuildingStats
+import juandb.entelect.challenge.entity.GameDetails
+import juandb.entelect.challenge.entity.GameState
+import juandb.entelect.challenge.entity.Player
+import juandb.entelect.challenge.entity.RowState
 import juandb.entelect.challenge.util.logger
 
 class Bot(private val gameState: GameState) {
