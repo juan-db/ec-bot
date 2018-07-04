@@ -1,7 +1,7 @@
 package juandb.entelect.challenge.entity
 
 import juandb.entelect.challenge.entity.Building.BuildingType
-import java.util.*
+import java.util.HashMap
 
 data class GameDetails(
 		val round: Int,

@@ -26,7 +26,7 @@ abstract class BuildCommand(gameState: GameState,
 		private class DefenseCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
 			override fun getWeight(): Int {
-				return gameState.rows.firstOrNull { it.index == y }?.let {
+				return gameState.getRows().firstOrNull { it.index == y }?.let {
 					it.enemyAttackBuildings * 3 - it.friendlyDefenseBuildings
 				} ?: 0
 			}
@@ -35,7 +35,7 @@ abstract class BuildCommand(gameState: GameState,
 		private class AttackCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
 			override fun getWeight(): Int {
-				return gameState.rows.firstOrNull { it.index == y }?.let {
+				return gameState.getRows().firstOrNull { it.index == y }?.let {
 					// Not a good idea to attack a row with a lot of enemy defense buildings
 					val defenseBias = myWidth - it.enemyDefenseBuildings * 3
 					// Good idea to attack row with a lot of valuable buildings
@@ -56,7 +56,7 @@ abstract class BuildCommand(gameState: GameState,
 				// building each turn plus some extra energy buildings for good measure.
 				val idealEnergyBuildingCount = min(myWidth * mapHeight / 3,
 				                                   necessaryGenerationPerTurn / energyBuildingEnergyPerTurn + 3)
-				val currentEnergyBuildingCount = gameState.rows.sumBy { it.friendlyEnergyBuildings }
+				val currentEnergyBuildingCount = gameState.getRows().sumBy { it.friendlyEnergyBuildings }
 
 				val currentEnergy = gameState.myself?.energy ?: 0
 

@@ -1,12 +1,12 @@
 package juandb.entelect.challenge.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 import juandb.entelect.challenge.entity.Player.PlayerType
 
 data class Building(
 		val x: Int,
 		val y: Int,
-		@JsonProperty("playerType")
+		@SerializedName("playerType")
 		val owner: PlayerType,
 		val health: Int,
 		val constructionTimeLeft: Int,
