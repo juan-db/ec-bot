@@ -8,7 +8,7 @@ class DoNothingCommand(gameState: GameState) : Command(gameState) {
 		private val random: Random = Random()
 	}
 
-	override fun getWeight(): Int = random.nextInt(5) // TODO
+	override fun getWeight(): Double = Math.random() * 2.0 // TODO
 	override fun getCommand(): String = ""
 
 	override fun toString(): String = this.javaClass.name

@@ -4,6 +4,7 @@ import juandb.entelect.challenge.entity.Building
 import juandb.entelect.challenge.entity.Building.BuildingType
 import juandb.entelect.challenge.entity.BuildingStats
 import juandb.entelect.challenge.entity.GameState
+import juandb.entelect.challenge.entity.Player
 import java.util.Random
 import kotlin.math.max
 import kotlin.math.min
@@ -25,29 +26,35 @@ abstract class BuildCommand(gameState: GameState,
 
 		private class DefenseCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
-			override fun getWeight(): Int {
+			override fun getWeight(): Double {
 				return gameState.getRows().firstOrNull { it.index == y }?.let {
-					it.enemyAttackBuildings * 3 - it.friendlyDefenseBuildings
-				} ?: 0
+					val urgency = it.enemyAttackBuildings * 3 - it.friendlyDefenseBuildings
+					val firstMissile = it.cells.map { it.missiles.firstOrNull { it.owner == Player.ENEMY } }.first { it != null }
+					val missileDistance = firstMissile?.x ?: x-x
+					val valuableBuildingsBefore = it.friendlyOccupiedCells.filter { it.x < x }
+							.count { it.buildings.any { it.buildingType == BuildingType.ATTACK }
+									|| it.buildings.any { it.buildingType == BuildingType.ENERGY } }
+					return urgency + (missileDistance - (firstMissile?.speed ?: 0)) + valuableBuildingsBefore * 0.5
+				}?.toDouble() ?: 0.0
 			}
 		}
 
 		private class AttackCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
-			override fun getWeight(): Int {
+			override fun getWeight(): Double {
 				return gameState.getRows().firstOrNull { it.index == y }?.let {
 					// Not a good idea to attack a row with a lot of enemy defense buildings
 					val defenseBias = myWidth - it.enemyDefenseBuildings * 3
 					// Good idea to attack row with a lot of valuable buildings
 					val valuableBias = it.enemyAttackBuildings + it.enemyEnergyBuildings * 1.5
-					return defenseBias + valuableBias.toInt()
-				} ?: 0
+					return defenseBias + valuableBias
+				} ?: 0.0
 			}
 		}
 
 		private class EnergyCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
-			override fun getWeight(): Int {
+			override fun getWeight(): Double {
 				val mostExpensiveEssentialBuilding = max(buildingsStats[BuildingType.DEFENSE]!!.price,
 				                                         buildingsStats[BuildingType.ATTACK]!!.price)
 				val necessaryGenerationPerTurn = mostExpensiveEssentialBuilding - gameState.gameDetails.roundIncomeEnergy
@@ -60,7 +67,11 @@ abstract class BuildCommand(gameState: GameState,
 
 				val currentEnergy = gameState.myself?.energy ?: 0
 
-				return idealEnergyBuildingCount - currentEnergyBuildingCount - currentEnergy / 50
+				var weight = idealEnergyBuildingCount - currentEnergyBuildingCount
+				-currentEnergy / 50
+				-y / (myWidth + 1)
+
+				return weight.toDouble()
 			}
 		}
 
@@ -70,7 +81,7 @@ abstract class BuildCommand(gameState: GameState,
 				BuildingType.ATTACK -> AttackCommand(gameState, x, y, buildingType)
 				BuildingType.ENERGY -> EnergyCommand(gameState, x, y, buildingType)
 				else -> object : BuildCommand(gameState, x, y, buildingType) {
-					override fun getWeight(): Int = random.nextInt(5)
+					override fun getWeight(): Double = Math.random() * 5.0
 				}
 			}
 		}
