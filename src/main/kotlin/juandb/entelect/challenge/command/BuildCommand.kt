@@ -22,19 +22,17 @@ abstract class BuildCommand(gameState: GameState,
 			return "$x,$y,${buildingType.id}"
 		}
 
-		private val random: Random = Random()
-
 		private class DefenseCommand(gameState: GameState, x: Int, y: Int, buildingType: BuildingType)
 			: BuildCommand(gameState, x, y, buildingType) {
 			override fun getWeight(): Double {
 				return gameState.getRows().firstOrNull { it.index == y }?.let {
-					val urgency = it.enemyAttackBuildings * 3 - it.friendlyDefenseBuildings
-					val firstMissile = it.cells.map { it.missiles.firstOrNull { it.owner == Player.ENEMY } }.first { it != null }
-					val missileDistance = firstMissile?.x ?: x-x
+					val urgency = it.enemyAttackBuildings * 4 - it.friendlyDefenseBuildings
+					val firstMissile = it.cells.map { it.missiles.firstOrNull { it.owner == Player.ENEMY } }.firstOrNull { it != null }
+					val missileDistance = (firstMissile?.x ?: x) - x
 					val valuableBuildingsBefore = it.friendlyOccupiedCells.filter { it.x < x }
 							.count { it.buildings.any { it.buildingType == BuildingType.ATTACK }
 									|| it.buildings.any { it.buildingType == BuildingType.ENERGY } }
-					return urgency + (missileDistance - (firstMissile?.speed ?: 0)) + valuableBuildingsBefore * 0.5
+					urgency + valuableBuildingsBefore - missileDistance / (firstMissile?.speed ?: 1)
 				}?.toDouble() ?: 0.0
 			}
 		}
